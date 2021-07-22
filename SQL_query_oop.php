@@ -36,12 +36,19 @@ class Database
             // print_r($params);
             // echo "</pre>";
 
-            $table_columns = implode(',',array_keys($params));
+            $table_columns = implode(', ',array_keys($params));
+            $table_values = implode("', '",$params);
 
-            $sql = "INSERT INTO $table () VALUES ()";
-
+            $sql = "INSERT INTO $table ($table_columns) VALUES ('$table_values')";
+            
+            if($this->mysqli->query($sql)){
+                array_push($this->result,$this->mysqli->insert_id);
+                return true;
+            }else{
+                array_push($this->result, $this->mysqli->error);
+            }
         }else{
-
+            return false;
         }
     }
 
@@ -75,6 +82,12 @@ class Database
             array_push($this->result," query failed!!!");
             return false;
         }
+    }
+
+    public function getResult(){
+        $val = $this->result;
+        $this->result = array();
+        return $val;
     }
 
 
