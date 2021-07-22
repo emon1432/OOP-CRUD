@@ -85,14 +85,71 @@ class Database
     }
 
     //Function to delete table or row(s) from database
-    public function delete()
+    public function delete($table, $where = null)
     {
+        //Check to see if the table exists
+        if ($this->tableExists($table)) {
+            $sql = "DELETE FROM $table";
+            if($where!=null){
+                $sql .= " WHERE $where";
+            }
+
+            //Make the query to updated to the database
+            if ($this->mysqli->query($sql)) {
+                array_push($this->result, $this->mysqli->affected_rows);
+                return true; // the data has been deleted
+            } else {
+                array_push($this->result, $this->mysqli->error);
+                return false; // the data has not been deleted
+            }
+            
+        } else {
+            return false; //Table does not exist
+        }
+
     }
 
+   
+
     //Function to SELECT from the database
-    public function select()
+    public function select($table,$columns="*",$join=null,$where=null,$order=null,$limit=null)
     {
+        if ($this->tableExists($table)) {
+            $sql = "SELECT $columns FROM $table";
+            if($join!=null){
+                $sql .= " JOIN $join";
+            }
+            if($where!=null){
+                $sql .= " WHERE $where";
+            }
+            if($order!=null){
+                $sql .= " ORDER BY $order";
+            }
+            if($limit!=null){
+                $sql .= " LIMIT 0,$limit";
+            }
+        } else {
+            return false; //Table does not exist
+        }
+        $this->get_sql($sql);
     }
+
+     //Function to sql from the database
+     public function get_sql($sql)
+     {
+         $query = $this->mysqli->query($sql);
+         //Make the query to setect to the database
+         if ($query) {
+             $this->result = $query->fetch_all(MYSQLI_ASSOC);
+             return true; //  data has been selected
+         } else {
+             array_push($this->result, $this->mysqli->error);
+             return false; //  data has not been selected
+         }
+ 
+     }
+
+    
 
     //Table Checking
     public function tableExists($table)

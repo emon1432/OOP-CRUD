@@ -18,6 +18,27 @@ $obj = new Database();
 // echo "</pre>";
 
 
+// $obj->delete('sec_a','Roll="18056"');
+// echo "Delete result : ";
+// echo "<pre>";
+// print_r($obj->getResult());
+// echo "</pre>";
+
+// $obj->get_sql('SELECT * FROM sec_a');
+// echo "SQL result : ";
+// echo "<pre>";
+// print_r($obj->getResult());
+// echo "</pre>";
+
+
+
+
+
+// $obj->select('sec_a','Roll, Name, gender_name, blood_name, Phone_Number','gender ON sec_a.Gender=gender.gender_id LEFT JOIN blood_group ON sec_a.Blood_group=blood_group.blood_id',null,'Roll ASC',null);
+// echo "Select result : ";
+// echo "<pre>";
+// print_r($obj->getResult());
+// echo "</pre>";
 
 
 
