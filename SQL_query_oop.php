@@ -14,47 +14,74 @@ class Database
     //Create Connection
     public function __construct()
     {
-        if(!$this->conn){
-            $this->mysqli = new mysqli($this->db_host,$this->db_user,$this->db_password,$this->db_name);
-            $this->conn=true;
-            if($this->mysqli->connect_error){
-                array_push($this->result,$this->mysqli->connect_error);
+        if (!$this->conn) {
+            $this->mysqli = new mysqli($this->db_host, $this->db_user, $this->db_password, $this->db_name);
+            $this->conn = true;
+            if ($this->mysqli->connect_error) {
+                array_push($this->result, $this->mysqli->connect_error);
                 return false;
             }
-        }
-        else{
-            return true; 
+        } else {
+            return true;
         }
     }
 
 
     //Function to insert into database
-    public function insert($table, $params=array())
+    public function insert($table, $params = array())
     {
-        if($this->tableExists($table)){
+        //Check to see if the table exists
+        if ($this->tableExists($table)) {
             // echo "<pre>";
             // print_r($params);
             // echo "</pre>";
 
-            $table_columns = implode(', ',array_keys($params));
-            $table_values = implode("', '",$params);
+            //conver array to string
+            $table_columns = implode(', ', array_keys($params));
+            $table_values = implode("', '", $params);
 
             $sql = "INSERT INTO $table ($table_columns) VALUES ('$table_values')";
-            
-            if($this->mysqli->query($sql)){
-                array_push($this->result,$this->mysqli->insert_id);
-                return true;
-            }else{
+
+            //Make the query to insert to the database
+            if ($this->mysqli->query($sql)) {
+                array_push($this->result, $this->mysqli->insert_id);
+                return true; // the data has been inserted
+            } else {
                 array_push($this->result, $this->mysqli->error);
+                return false; // the data has not been inserted
             }
-        }else{
-            return false;
+        } else {
+            return false; //Table does not exist
         }
     }
 
     //Function to update row into database
-    public function update()
+    public function update($table, $params = array(), $where = null)
     {
+        //Check to see if the table exists
+        if ($this->tableExists($table)) {
+
+            $args = array();
+            foreach ($params as $key => $value) {
+                $args[] = "$key = '$value'";
+            }
+
+            $sql = "UPDATE $table SET " . implode(', ', $args);
+            if ($where != null) {
+                $sql .= " WHERE $where";
+            }
+            //Make the query to updated to the database
+            if ($this->mysqli->query($sql)) {
+                array_push($this->result, $this->mysqli->affected_rows);
+                return true; // the data has been updated
+            } else {
+                array_push($this->result, $this->mysqli->error);
+                return false; // the data has not been updated
+            }
+            
+        } else {
+            return false; //Table does not exist
+        }
     }
 
     //Function to delete table or row(s) from database
@@ -68,23 +95,25 @@ class Database
     }
 
     //Table Checking
-    public function tableExists($table){
+    public function tableExists($table)
+    {
         $sql = "SHOW TABLES FROM $this->db_name LIKE '$table'";
         $tableInDb = $this->mysqli->query($sql);
-        if($tableInDb){
-            if($tableInDb->num_rows==1){
+        if ($tableInDb) {
+            if ($tableInDb->num_rows == 1) {
                 return true;
-            }else{
-                array_push($this->result, $table." does not exist in this Database");
+            } else {
+                array_push($this->result, $table . " does not exist in this Database");
                 return false;
             }
-        }else{
-            array_push($this->result," query failed!!!");
+        } else {
+            array_push($this->result, " query failed!!!");
             return false;
         }
     }
 
-    public function getResult(){
+    public function getResult()
+    {
         $val = $this->result;
         $this->result = array();
         return $val;
@@ -94,12 +123,12 @@ class Database
     //Close connection
     public function __destruct()
     {
-        if($this->conn){
-            if($this->mysqli->close()){
+        if ($this->conn) {
+            if ($this->mysqli->close()) {
                 $this->conn = false;
                 return true;
             }
-        }else{
+        } else {
             return false;
         }
     }
