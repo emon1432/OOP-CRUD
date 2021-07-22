@@ -34,12 +34,20 @@ $obj = new Database();
 
 
 
-// $obj->select('sec_a','Roll, Name, gender_name, blood_name, Phone_Number','gender ON sec_a.Gender=gender.gender_id LEFT JOIN blood_group ON sec_a.Blood_group=blood_group.blood_id',null,'Roll ASC',null);
-// echo "Select result : ";
-// echo "<pre>";
-// print_r($obj->getResult());
-// echo "</pre>";
+$obj->select('sec_a','Roll, Name, gender_name, blood_name, Phone_Number','gender ON sec_a.Gender=gender.gender_id LEFT JOIN blood_group ON sec_a.Blood_group=blood_group.blood_id',null,'Roll ASC',3);
+echo "Select result : ";
+echo "<pre>";
+print_r($obj->getResult());
+echo "</pre>";
 
 
+$obj->pagination('sec_a','gender ON sec_a.Gender=gender.gender_id LEFT JOIN blood_group ON sec_a.Blood_group=blood_group.blood_id',null,3);
+
+// $row = $obj->getResult();
+
+// while($row){
+// echo $row['Roll'];
+
+// }
 
 ?>
